@@ -72,8 +72,8 @@ spec:
             - ALL
           readOnlyRootFilesystem: true
         volumeMounts:
-        - mountPath: /tmp
-          name: tmpfs
+        - mountPath: /etc/prometheus
+          name: prometheus
           readOnly: false
         - mountPath: /var/run/serving-cert
           name: volume-serving-cert
@@ -86,12 +86,16 @@ spec:
       serviceAccountName: prometheus-adapter
       volumes:
       - emptyDir: {}
-        name: tmpfs
+        name: prometheus
       - emptyDir: {}
         name: volume-serving-cert
       - configMap:
           name: adapter-config
         name: config
+        persistentVolumeClaim:
+            claimName: prometheus-pvc
+
+
 
 #        volumeMounts:
 #        - mountPath: /etc/prometheus
