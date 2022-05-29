@@ -9,7 +9,7 @@ metadata:
   name: prometheus-adapter
   namespace: monitoring
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/component: metrics-adapter
@@ -76,14 +76,14 @@ spec:
           name: tmpfs
           readOnly: false
         - mountPath: /var/run/serving-cert
-          name: volume-serving-cert
+          name: volume-serving-cert  
           readOnly: false
         - mountPath: /etc/adapter
           name: config
           readOnly: false
       nodeSelector:
         kubernetes.io/os: linux
-      serviceAccountName: prometheus-adapter
+      serviceAccountName: prometheus-adapter     
       volumes:
       - emptyDir: {}
         name: tmpfs
@@ -92,11 +92,15 @@ spec:
       - configMap:
           name: adapter-config
         name: config
-
-#        volumeMounts:
-#        - mountPath: /etc/prometheus
-#          name: prometheus
+      
 #      volumes:
-#        name: prometheus
+#      - name: tmpfs     
 #        persistentVolumeClaim:
-#            claimName: prometheus-pvc
+#          claimName: prometheus-tmpfs  
+#      - name: volume-serving-cert     
+#        persistentVolumeClaim:
+#          claimName: prometheus-pvc         
+#      - configMap:
+#          name: adapter-config
+#        name: config
+        
