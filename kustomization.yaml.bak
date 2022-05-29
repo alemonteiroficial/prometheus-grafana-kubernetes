@@ -23,7 +23,6 @@ resources:
 - ./manifests/grafana-dashboardSources.yaml
 - ./manifests/grafana-deployment.yaml
 - ./manifests/grafana-networkPolicy.yaml
-- ./manifests/grafana-permanentVolumeClaim.yaml
 - ./manifests/grafana-prometheusRule.yaml
 - ./manifests/grafana-service.yaml
 - ./manifests/grafana-serviceAccount.yaml
@@ -73,6 +72,7 @@ resources:
 - ./manifests/prometheusAdapter-configMap.yaml
 - ./manifests/prometheusAdapter-deployment.yaml
 - ./manifests/prometheusAdapter-networkPolicy.yaml
+- ./manifests/prometheusAdapter-permanentVolumeClaim.yaml
 - ./manifests/prometheusAdapter-podDisruptionBudget.yaml
 - ./manifests/prometheusAdapter-roleBindingAuthReader.yaml
 - ./manifests/prometheusAdapter-service.yaml
