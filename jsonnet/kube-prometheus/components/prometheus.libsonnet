@@ -120,6 +120,18 @@ function(params) {
         from: [{
           podSelector: {
             matchLabels: {
+              'app.kubernetes.io/name': 'prometheus-adapter',
+            },
+          },
+        }],
+        ports: [{
+          port: 9090,
+          protocol: 'TCP',
+        }],
+      }, {
+        from: [{
+          podSelector: {
+            matchLabels: {
               'app.kubernetes.io/name': 'grafana',
             },
           },
@@ -149,7 +161,7 @@ function(params) {
     apiVersion: 'v1',
     kind: 'ServiceAccount',
     metadata: p._metadata,
-    automountServiceAccountToken: false,
+    automountServiceAccountToken: true,
   },
 
   service: {

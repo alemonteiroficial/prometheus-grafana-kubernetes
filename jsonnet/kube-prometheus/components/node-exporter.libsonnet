@@ -13,8 +13,18 @@ local defaults = {
     requests: { cpu: '102m', memory: '180Mi' },
     limits: { cpu: '250m', memory: '180Mi' },
   },
+  kubeRbacProxy:: {
+    resources+: {
+      requests: { cpu: '10m', memory: '20Mi' },
+      limits: { cpu: '20m', memory: '40Mi' },
+    },
+  },
   listenAddress:: '127.0.0.1',
   filesystemMountPointsExclude:: '^/(dev|proc|sys|run/k3s/containerd/.+|var/lib/docker/.+|var/lib/kubelet/pods/.+)($|/)',
+  // NOTE: ignore veth network interface associated with containers.
+  // OVN renames veth.* to <rand-hex>@if<X> where X is /sys/class/net/<if>/ifindex
+  // thus [a-z0-9] regex below
+  ignoredNetworkDevices:: '^(veth.*|[a-f0-9]{15})$',
   port:: 9100,
   commonLabels:: {
     'app.kubernetes.io/name': defaults.name,
@@ -41,7 +51,7 @@ local defaults = {
       fsSpaceFillingUpWarningThreshold: 15,
       // Send critical alert only after (imageGCHighThresholdPercent + 5) is hit, but filesystem is not freed up for a prolonged duration.
       fsSpaceFillingUpCriticalThreshold: 10,
-      diskDeviceSelector: 'device=~"mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|dasd.+"',
+      diskDeviceSelector: 'device=~"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)"',
       runbookURLPattern: 'https://runbooks.prometheus-operator.dev/runbooks/node/%s',
     },
   },
@@ -197,14 +207,13 @@ function(params) {
         '--web.listen-address=' + std.join(':', [ne._config.listenAddress, std.toString(ne._config.port)]),
         '--path.sysfs=/host/sys',
         '--path.rootfs=/host/root',
+        '--path.udev.data=/host/root/run/udev/data',
         '--no-collector.wifi',
         '--no-collector.hwmon',
+        '--no-collector.btrfs',
         '--collector.filesystem.mount-points-exclude=' + ne._config.filesystemMountPointsExclude,
-        // NOTE: ignore veth network interface associated with containers.
-        // OVN renames veth.* to <rand-hex>@if<X> where X is /sys/class/net/<if>/ifindex
-        // thus [a-z0-9] regex below
-        '--collector.netclass.ignored-devices=^(veth.*|[a-f0-9]{15})$',
-        '--collector.netdev.device-exclude=^(veth.*|[a-f0-9]{15})$',
+        '--collector.netclass.ignored-devices=' + ne._config.ignoredNetworkDevices,
+        '--collector.netdev.device-exclude=' + ne._config.ignoredNetworkDevices,
       ],
       volumeMounts: [
         { name: 'sys', mountPath: '/host/sys', mountPropagation: 'HostToContainer', readOnly: true },
@@ -218,7 +227,7 @@ function(params) {
       },
     };
 
-    local kubeRbacProxy = krp({
+    local kubeRbacProxy = krp(ne._config.kubeRbacProxy {
       name: 'kube-rbac-proxy',
       //image: krpImage,
       upstream: 'http://127.0.0.1:' + ne._config.port + '/',
