@@ -1,99 +1,118 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-- ./manifests/alertmanager-alertmanager.yaml
-- ./manifests/alertmanager-networkPolicy.yaml
-- ./manifests/alertmanager-podDisruptionBudget.yaml
-- ./manifests/alertmanager-prometheusRule.yaml
-- ./manifests/alertmanager-secret.yaml
-- ./manifests/alertmanager-service.yaml
-- ./manifests/alertmanager-serviceAccount.yaml
-- ./manifests/alertmanager-serviceMonitor.yaml
-- ./manifests/blackboxExporter-clusterRole.yaml
-- ./manifests/blackboxExporter-clusterRoleBinding.yaml
-- ./manifests/blackboxExporter-configuration.yaml
-- ./manifests/blackboxExporter-deployment.yaml
-- ./manifests/blackboxExporter-networkPolicy.yaml
-- ./manifests/blackboxExporter-service.yaml
-- ./manifests/blackboxExporter-serviceAccount.yaml
-- ./manifests/blackboxExporter-serviceMonitor.yaml
-- ./manifests/grafana-config.yaml
-- ./manifests/grafana-dashboardDatasources.yaml
-- ./manifests/grafana-dashboardDefinitions.yaml
-- ./manifests/grafana-dashboardSources.yaml
-- ./manifests/grafana-deployment.yaml
-- ./manifests/grafana-networkPolicy.yaml
-- ./manifests/grafana-permanentVolumeClaim.yaml
-- ./manifests/grafana-prometheusRule.yaml
-- ./manifests/grafana-service.yaml
-- ./manifests/grafana-serviceAccount.yaml
-- ./manifests/grafana-serviceMonitor.yaml
-- ./manifests/kubePrometheus-prometheusRule.yaml
-- ./manifests/kubeStateMetrics-clusterRole.yaml
-- ./manifests/kubeStateMetrics-clusterRoleBinding.yaml
-- ./manifests/kubeStateMetrics-deployment.yaml
-- ./manifests/kubeStateMetrics-networkPolicy.yaml
-- ./manifests/kubeStateMetrics-prometheusRule.yaml
-- ./manifests/kubeStateMetrics-service.yaml
-- ./manifests/kubeStateMetrics-serviceAccount.yaml
-- ./manifests/kubeStateMetrics-serviceMonitor.yaml
-- ./manifests/kubernetesControlPlane-prometheusRule.yaml
-- ./manifests/kubernetesControlPlane-serviceMonitorApiserver.yaml
-- ./manifests/kubernetesControlPlane-serviceMonitorCoreDNS.yaml
-- ./manifests/kubernetesControlPlane-serviceMonitorKubeControllerManager.yaml
-- ./manifests/kubernetesControlPlane-serviceMonitorKubeScheduler.yaml
-- ./manifests/kubernetesControlPlane-serviceMonitorKubelet.yaml
-- ./manifests/nodeExporter-clusterRole.yaml
-- ./manifests/nodeExporter-clusterRoleBinding.yaml
-- ./manifests/nodeExporter-daemonset.yaml
-- ./manifests/nodeExporter-networkPolicy.yaml
-- ./manifests/nodeExporter-prometheusRule.yaml
-- ./manifests/nodeExporter-service.yaml
-- ./manifests/nodeExporter-serviceAccount.yaml
-- ./manifests/nodeExporter-serviceMonitor.yaml
-- ./manifests/prometheus-clusterRole.yaml
-- ./manifests/prometheus-clusterRoleBinding.yaml
-- ./manifests/prometheus-networkPolicy.yaml
-- ./manifests/prometheus-podDisruptionBudget.yaml
-- ./manifests/prometheus-prometheus.yaml
-- ./manifests/prometheus-prometheusRule.yaml
-- ./manifests/prometheus-roleBindingConfig.yaml
-- ./manifests/prometheus-roleBindingSpecificNamespaces.yaml
-- ./manifests/prometheus-roleConfig.yaml
-- ./manifests/prometheus-roleSpecificNamespaces.yaml
-- ./manifests/prometheus-service.yaml
-- ./manifests/prometheus-serviceAccount.yaml
-- ./manifests/prometheus-serviceMonitor.yaml
-- ./manifests/prometheusAdapter-apiService.yaml
-- ./manifests/prometheusAdapter-clusterRole.yaml
-- ./manifests/prometheusAdapter-clusterRoleAggregatedMetricsReader.yaml
-- ./manifests/prometheusAdapter-clusterRoleBinding.yaml
-- ./manifests/prometheusAdapter-clusterRoleBindingDelegator.yaml
-- ./manifests/prometheusAdapter-clusterRoleServerResources.yaml
-- ./manifests/prometheusAdapter-configMap.yaml
-- ./manifests/prometheusAdapter-deployment.yaml
-- ./manifests/prometheusAdapter-networkPolicy.yaml
-- ./manifests/prometheusAdapter-podDisruptionBudget.yaml
-- ./manifests/prometheusAdapter-roleBindingAuthReader.yaml
-- ./manifests/prometheusAdapter-service.yaml
-- ./manifests/prometheusAdapter-serviceAccount.yaml
-- ./manifests/prometheusAdapter-serviceMonitor.yaml
-- ./manifests/prometheusOperator-clusterRole.yaml
-- ./manifests/prometheusOperator-clusterRoleBinding.yaml
-- ./manifests/prometheusOperator-deployment.yaml
-- ./manifests/prometheusOperator-networkPolicy.yaml
-- ./manifests/prometheusOperator-prometheusRule.yaml
-- ./manifests/prometheusOperator-service.yaml
-- ./manifests/prometheusOperator-serviceAccount.yaml
-- ./manifests/prometheusOperator-serviceMonitor.yaml
-- ./manifests/setup/0alertmanagerConfigCustomResourceDefinition.yaml
-- ./manifests/setup/0alertmanagerCustomResourceDefinition.yaml
-- ./manifests/setup/0podmonitorCustomResourceDefinition.yaml
-- ./manifests/setup/0probeCustomResourceDefinition.yaml
-- ./manifests/setup/0prometheusCustomResourceDefinition.yaml
-- ./manifests/setup/0prometheusagentCustomResourceDefinition.yaml
-- ./manifests/setup/0prometheusruleCustomResourceDefinition.yaml
-- ./manifests/setup/0scrapeconfigCustomResourceDefinition.yaml
-- ./manifests/setup/0servicemonitorCustomResourceDefinition.yaml
-- ./manifests/setup/0thanosrulerCustomResourceDefinition.yaml
-- ./manifests/setup/namespace.yaml
+  # ----------------------------------------------------
+  # 1. CRDs (Custom Resource Definitions) - DEVEM VIR PRIMEIRO!
+  # O Kubernetes precisa saber o que são Alertmanager, Prometheus, PrometheusRule, ServiceMonitor, etc.
+  # ANTES que você tente criar instâncias deles.
+  # O namespace também pode vir aqui, ou ser criado à parte.
+  # ----------------------------------------------------
+  - ./manifests/setup/namespace.yaml # Certifique-se que o namespace é criado antes de tudo.
+  - ./manifests/setup/0alertmanagerConfigCustomResourceDefinition.yaml
+  - ./manifests/setup/0alertmanagerCustomResourceDefinition.yaml
+  - ./manifests/setup/0podmonitorCustomResourceDefinition.yaml
+  - ./manifests/setup/0probeCustomResourceDefinition.yaml
+  - ./manifests/setup/0prometheusCustomResourceDefinition.yaml
+  - ./manifests/setup/0prometheusagentCustomResourceDefinition.yaml
+  - ./manifests/setup/0prometheusruleCustomResourceDefinition.yaml
+  - ./manifests/setup/0scrapeconfigCustomResourceDefinition.yaml
+  - ./manifests/setup/0servicemonitorCustomResourceDefinition.yaml
+  - ./manifests/setup/0thanosrulerCustomResourceDefinition.yaml
+
+  # ----------------------------------------------------
+  # 2. Roles e RoleBindings (RBAC) - Normalmente vêm depois dos CRDs, mas antes dos Deployments.
+  # Certifique-se de que os ServiceAccounts e ClusterRoles/RoleBindings necessários existam.
+  # ----------------------------------------------------
+  - ./manifests/alertmanager-serviceAccount.yaml
+  - ./manifests/blackboxExporter-clusterRole.yaml
+  - ./manifests/blackboxExporter-clusterRoleBinding.yaml
+  - ./manifests/blackboxExporter-serviceAccount.yaml
+  - ./manifests/grafana-serviceAccount.yaml
+  - ./manifests/kubeStateMetrics-clusterRole.yaml
+  - ./manifests/kubeStateMetrics-clusterRoleBinding.yaml
+  - ./manifests/kubeStateMetrics-serviceAccount.yaml
+  - ./manifests/nodeExporter-clusterRole.yaml
+  - ./manifests/nodeExporter-clusterRoleBinding.yaml
+  - ./manifests/nodeExporter-serviceAccount.yaml
+  - ./manifests/prometheus-clusterRole.yaml
+  - ./manifests/prometheus-clusterRoleBinding.yaml
+  - ./manifests/prometheus-roleBindingConfig.yaml
+  - ./manifests/prometheus-roleBindingSpecificNamespaces.yaml
+  - ./manifests/prometheus-roleConfig.yaml
+  - ./manifests/prometheus-roleSpecificNamespaces.yaml
+  - ./manifests/prometheus-serviceAccount.yaml
+  - ./manifests/prometheusAdapter-apiService.yaml # Este pode ser mais sensível à ordem
+  - ./manifests/prometheusAdapter-clusterRole.yaml
+  - ./manifests/prometheusAdapter-clusterRoleAggregatedMetricsReader.yaml
+  - ./manifests/prometheusAdapter-clusterRoleBinding.yaml
+  - ./manifests/prometheusAdapter-clusterRoleBindingDelegator.yaml
+  - ./manifests/prometheusAdapter-clusterRoleServerResources.yaml
+  - ./manifests/prometheusAdapter-roleBindingAuthReader.yaml
+  - ./manifests/prometheusAdapter-serviceAccount.yaml
+  - ./manifests/prometheusOperator-clusterRole.yaml
+  - ./manifests/prometheusOperator-clusterRoleBinding.yaml
+  - ./manifests/prometheusOperator-serviceAccount.yaml
+
+
+  # ----------------------------------------------------
+  # 3. Deployments, DaemonSets, ConfigMaps, Secrets, Services, etc.
+  # Estes recursos dependem dos CRDs e do RBAC.
+  # ----------------------------------------------------
+  - ./manifests/alertmanager-alertmanager.yaml # Este é um Custom Resource (CR) - precisa do CRD Alertmanager
+  - ./manifests/alertmanager-networkPolicy.yaml
+  - ./manifests/alertmanager-podDisruptionBudget.yaml
+  - ./manifests/alertmanager-prometheusRule.yaml # CR - precisa do CRD PrometheusRule
+  - ./manifests/alertmanager-secret.yaml
+  - ./manifests/alertmanager-service.yaml
+  - ./manifests/alertmanager-serviceMonitor.yaml # CR - precisa do CRD ServiceMonitor
+  - ./manifests/blackboxExporter-configuration.yaml
+  - ./manifests/blackboxExporter-deployment.yaml
+  - ./manifests/blackboxExporter-networkPolicy.yaml
+  - ./manifests/blackboxExporter-service.yaml
+  - ./manifests/blackboxExporter-serviceMonitor.yaml # CR
+  - ./manifests/grafana-config.yaml
+  - ./manifests/grafana-dashboardDatasources.yaml
+  - ./manifests/grafana-dashboardDefinitions.yaml
+  - ./manifests/grafana-dashboardSources.yaml
+  - ./manifests/grafana-deployment.yaml
+  - ./manifests/grafana-loki.yaml
+  - ./manifests/grafana-networkPolicy.yaml
+  - ./manifests/grafana-permanentVolumeClaim.yaml
+  - ./manifests/grafana-prometheusRule.yaml # CR
+  - ./manifests/grafana-promtail.yaml
+  - ./manifests/grafana-service.yaml
+  - ./manifests/grafana-serviceMonitor.yaml # CR
+  - ./manifests/kubePrometheus-prometheusRule.yaml # CR
+  - ./manifests/kubeStateMetrics-deployment.yaml
+  - ./manifests/kubeStateMetrics-networkPolicy.yaml
+  - ./manifests/kubeStateMetrics-prometheusRule.yaml # CR
+  - ./manifests/kubeStateMetrics-service.yaml
+  - ./manifests/kubeStateMetrics-serviceMonitor.yaml # CR
+  - ./manifests/kubernetesControlPlane-prometheusRule.yaml # CR
+  - ./manifests/kubernetesControlPlane-serviceMonitorApiserver.yaml # CR
+  - ./manifests/kubernetesControlPlane-serviceMonitorCoreDNS.yaml # CR
+  - ./manifests/kubernetesControlPlane-serviceMonitorKubeControllerManager.yaml # CR
+  - ./manifests/kubernetesControlPlane-serviceMonitorKubeScheduler.yaml # CR
+  - ./manifests/kubernetesControlPlane-serviceMonitorKubelet.yaml # CR
+  - ./manifests/nodeExporter-daemonset.yaml
+  - ./manifests/nodeExporter-networkPolicy.yaml
+  - ./manifests/nodeExporter-prometheusRule.yaml # CR
+  - ./manifests/nodeExporter-service.yaml
+  - ./manifests/nodeExporter-serviceMonitor.yaml # CR
+  - ./manifests/prometheus-networkPolicy.yaml
+  - ./manifests/prometheus-podDisruptionBudget.yaml
+  - ./manifests/prometheus-prometheus.yaml # CR - precisa do CRD Prometheus
+  - ./manifests/prometheus-prometheusRule.yaml # CR
+  - ./manifests/prometheus-service.yaml
+  - ./manifests/prometheus-serviceMonitor.yaml # CR
+  - ./manifests/prometheusAdapter-configMap.yaml
+  - ./manifests/prometheusAdapter-deployment.yaml
+  - ./manifests/prometheusAdapter-networkPolicy.yaml
+  - ./manifests/prometheusAdapter-podDisruptionBudget.yaml
+  - ./manifests/prometheusAdapter-service.yaml
+  - ./manifests/prometheusAdapter-serviceMonitor.yaml # CR
+  - ./manifests/prometheusOperator-deployment.yaml
+  - ./manifests/prometheusOperator-networkPolicy.yaml
+  - ./manifests/prometheusOperator-prometheusRule.yaml # CR
+  - ./manifests/prometheusOperator-service.yaml
+  - ./manifests/prometheusOperator-serviceMonitor.yaml # CR
